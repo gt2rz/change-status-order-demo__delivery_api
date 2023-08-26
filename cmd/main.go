@@ -4,10 +4,11 @@ import (
 	"context"
 	"log"
 
+	"github.com/gt2rz/change-status_order_demo/delivery_api/internal/routes"
 	"github.com/gt2rz/change-status_order_demo/delivery_api/internal/servers"
 )
 
-func init(){
+func init() {
 	log.Println("Initializing...!")
 }
 
@@ -17,7 +18,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := httpServer.Run(); err != nil {
+	if err := httpServer.Run(routes.InitRoutes); err != nil {
 		log.Fatal(err)
 	}
 }
