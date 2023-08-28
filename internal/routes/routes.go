@@ -10,4 +10,5 @@ import (
 func InitRoutes(server *servers.HttpServer, router *mux.Router) {
 	log.Println("Initializing routes...")
 
+	OrderRoutes(server, router)
 }
