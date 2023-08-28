@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/gt2rz/change-status_order_demo/delivery_api/internal/constants"
@@ -27,20 +28,29 @@ func ChangeStatusHandler(server *servers.HttpServer) http.HandlerFunc {
 		var request = ChangeStatusRequest{}
 
 		params := mux.Vars(r)
-		orderId := params["orderId"]
+		orderId, err := strconv.Atoi(params["orderId"])
+		if err != nil {
+			utils.SendHttpResponseError(w, constants.ErrBadRequest, http.StatusBadRequest)
+			return
+		}
 
 		if !existsOrder(orderId) {
 			utils.SendHttpResponseError(w, errors.New("orden no existe"), http.StatusNotFound)
 			return
 		}
 
-		err := json.NewDecoder(r.Body).Decode(&request)
+		err = json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
 			utils.SendHttpResponseError(w, constants.ErrBadRequest, http.StatusBadRequest)
 			return
 		}
 
 		fmt.Println(request.StatusId)
+		err = changeStatusOrder(orderId, request.StatusId)
+		if err != nil {
+			utils.SendHttpResponseError(w, constants.ErrBadRequest, http.StatusInternalServerError)
+			return
+		}
 
 		utils.SendHttpResponse(w, ChangeStatusResponse{
 			Status:  constants.Success,
@@ -49,9 +59,10 @@ func ChangeStatusHandler(server *servers.HttpServer) http.HandlerFunc {
 	}
 }
 
-func existsOrder(orderId string) bool {
-	if orderId != "1"{
-		return false
-	}
+func existsOrder(orderId int) bool {
 	return true
+}
+
+func changeStatusOrder(orderId int, statusId int) error {
+	return nil
 }
